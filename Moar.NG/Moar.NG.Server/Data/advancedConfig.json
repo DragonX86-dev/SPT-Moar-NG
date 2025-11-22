@@ -1,0 +1,7 @@
+{
+  "activate_spawn_culling_on_server_start": false,
+  "marksman_difficulty_changes": true,
+  "enable_boss_performance_improvements": true,
+  "show_map_culling_debug": false,
+  "spawn_point_area_target": 1
+}
