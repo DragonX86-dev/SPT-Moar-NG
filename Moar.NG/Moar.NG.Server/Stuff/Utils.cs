@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Moar.NG.Server.Globals;
+using Moar.NG.Server.Models;
 
 namespace Moar.NG.Server.Stuff;
 
@@ -16,11 +17,11 @@ public static class Utils
         return JsonSerializer.Deserialize<T>(json, options)!;
     }
 
-    public static Dictionary<string, object> GetRandomOrSelectedPreset()
+    public static string GetRandomOrSelectedPreset()
     {
-        if (GlobalValues.ForcedPreset.Equals("custom", StringComparison.CurrentCultureIgnoreCase))
+        if (GlobalValues.ForcedPreset.Equals("custom"))
         {
-            return new Dictionary<string, object>(); 
+            return "custom"; 
         }
 
         var allPresets = new List<string>();
@@ -35,8 +36,11 @@ public static class Utils
         var selectedPreset = allPresets[random.Next(allPresets.Count)];
         GlobalValues.CurrentPreset = selectedPreset;
 
-        return new Dictionary<string, object>(); 
+        return selectedPreset; 
     }
 
-    
+    public static BaseConfig GetPresetData(string presetName)
+    {
+        return GlobalValues.Presets[presetName];
+    } 
 }

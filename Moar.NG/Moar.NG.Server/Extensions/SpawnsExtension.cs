@@ -1,3 +1,4 @@
+using Moar.NG.Server.Globals;
 using Moar.NG.Server.Stuff;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -11,6 +12,8 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
 {
     public Task OnLoad()
     {
+        if (GlobalValues.BaseConfig.EnableBotSpawning != true) return Task.CompletedTask;
+        
         SetupSpawns();
 
         return Task.CompletedTask;

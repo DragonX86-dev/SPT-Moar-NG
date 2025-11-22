@@ -6,13 +6,27 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Version>1.0.0</Version>
-
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="SPTarkov.Common" Version="4.0.6" />
         <PackageReference Include="SPTarkov.DI" Version="4.0.6" />
         <PackageReference Include="SPTarkov.Server.Core" Version="4.0.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Data\advancedConfig.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\config.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\presets.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\presetWeightings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

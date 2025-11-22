@@ -6,23 +6,22 @@ using Moar.NG.Server.Models;
 using Moar.NG.Server.Stuff;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Utils;
 using static Moar.NG.Server.Stuff.Utils;
 
 namespace Moar.NG.Server.Globals;
 
-[Injectable (InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader)]
-public class GlobalValues(ModHelper modHelper, DatabaseServer databaseServer) : IOnLoad
+[Injectable (InjectionType.Singleton, TypePriority = OnLoadOrder.PostDBModLoader)]
+public class GlobalValues(ModHelper modHelper) : IOnLoad
 {
     public static BaseConfig BaseConfig { get; private set; } = null!;
     
     public static AdvancedConfig AdvancedConfig { get; private set; } = null!;
     
-    public static Dictionary<string, int> PresetWeightings { get; private set; } = null!;
+    public static Dictionary<string, BaseConfig> Presets { get; private set; } = new();
     
-    public static LocationBase[] LocationsBase { get; private set; } = null!;
+    public static Dictionary<string, int> PresetWeightings { get; private set; } = new();
     
-    public static Dictionary<int, SpawnPointParam[]> IndexedMapSpawns { get; private set; } = null!;
+    public static Dictionary<int, SpawnPointParam[]> IndexedMapSpawns { get; private set; } = new();
     
     public static SpawnPointParam PlayerSpawn { get; private set; } = null!;
     
@@ -34,19 +33,11 @@ public class GlobalValues(ModHelper modHelper, DatabaseServer databaseServer) : 
     {
         var modPath = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         
-        BaseConfig = modHelper.GetJsonDataFromFile<BaseConfig>(modPath, Path.Combine("data", "config.json"));
-        AdvancedConfig = modHelper.GetJsonDataFromFile<AdvancedConfig>(modPath, Path.Combine("data", "advancedConfig.json"));
-        PresetWeightings = modHelper.GetJsonDataFromFile<Dictionary<string, int>>(modPath, Path.Combine("data", "presetWeightings.json"));
-
-        LoadOrResetLocationsBase(databaseServer);
+        BaseConfig = modHelper.GetJsonDataFromFile<BaseConfig>(modPath, Path.Combine("Data", "config.json"));
+        AdvancedConfig = modHelper.GetJsonDataFromFile<AdvancedConfig>(modPath, Path.Combine("Data", "advancedConfig.json"));
+        PresetWeightings = modHelper.GetJsonDataFromFile<Dictionary<string, int>>(modPath, Path.Combine("Data", "presetWeightings.json"));
+        Presets = modHelper.GetJsonDataFromFile<Dictionary<string, BaseConfig>>(modPath, Path.Combine("Data", "presets.json"));
         
         return Task.CompletedTask;
-    }
-
-    public static void LoadOrResetLocationsBase(DatabaseServer databaseServer)
-    {
-        var locationsDict = databaseServer.GetTables().Locations.GetDictionary();
-
-        LocationsBase = Constants.MapList.Select(mapName => DeepCopy(locationsDict[mapName].Base)).ToArray();
     }
 }

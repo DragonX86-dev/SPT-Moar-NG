@@ -4,102 +4,102 @@ namespace Moar.NG.Server.Models;
 
 public record BaseConfig
 {
-    [JsonPropertyName("enable_bot_spawning")]
-    public required bool EnableBotSpawning { get; set; }
+    [JsonPropertyName("enableBotSpawning")]
+    public bool? EnableBotSpawning { get; set; }
     
-    [JsonPropertyName("spawn_smoothing")]
-    public required bool SpawnSmoothing { get; set; }
+    [JsonPropertyName("spawnSmoothing")]
+    public bool? SpawnSmoothing { get; set; }
     
-    [JsonPropertyName("pmc_difficulty")]
-    public required double PmcDifficulty { get; set; }
+    [JsonPropertyName("pmcDifficulty")]
+    public double? PmcDifficulty { get; set; }
     
-    [JsonPropertyName("scav_difficulty")]
-    public required double ScavDifficulty { get; set; }
+    [JsonPropertyName("scavDifficulty")]
+    public double? ScavDifficulty { get; set; }
 
-    [JsonPropertyName("scav_wave_distribution")]
-    public required double ScavWaveDistribution { get; set; }
+    [JsonPropertyName("scavWaveDistribution")]
+    public double? ScavWaveDistribution { get; set; }
     
-    [JsonPropertyName("scav_wave_quantity")]
-    public required double ScavWaveQuantity { get; set; }
+    [JsonPropertyName("scavWaveQuantity")]
+    public double? ScavWaveQuantity { get; set; }
     
-    [JsonPropertyName("starting_pmcs")]
-    public required bool StartingPmcs { get; set; }
+    [JsonPropertyName("startingPmcs")]
+    public bool? StartingPmcs { get; set; }
     
     [JsonPropertyName("pmcWaveDistribution")]
-    public required double PmcWaveDistribution { get; set; }
+    public double? PmcWaveDistribution { get; set; }
     
     [JsonPropertyName("pmcWaveQuantity")]
-    public required double PmcWaveQuantity { get; set; }
+    public double? PmcWaveQuantity { get; set; }
     
     [JsonPropertyName("randomSpawns")]
-    public required bool RandomSpawns { get; set; }
+    public bool? RandomSpawns { get; set; }
     
     [JsonPropertyName("zombiesEnabled")]
-    public required bool ZombiesEnabled { get; set; }
+    public bool? ZombiesEnabled { get; set; }
     
     [JsonPropertyName("zombieWaveDistribution")]
-    public required double ZombieWaveDistribution { get; set; }
+    public double? ZombieWaveDistribution { get; set; }
     
     [JsonPropertyName("zombieWaveQuantity")]
-    public required double ZombieWaveQuantity { get; set; }
+    public double? ZombieWaveQuantity { get; set; }
     
     [JsonPropertyName("zombieHealth")]
-    public required double ZombieHealth { get; set; }
+    public double? ZombieHealth { get; set; }
     
     [JsonPropertyName("maxBotCap")]
-    public required int MaxBotCap { get; set; }
+    public int? MaxBotCap { get; set; }
     
     [JsonPropertyName("maxBotPerZone")]
-    public required int MaxBotPerZone { get; set; }
+    public int? MaxBotPerZone { get; set; }
     
     [JsonPropertyName("sniperGroupChance")]
-    public required double SniperGroupChance { get; set; }
+    public double? SniperGroupChance { get; set; }
     
     [JsonPropertyName("scavGroupChance")]
-    public required double ScavGroupChance { get; set; }
+    public double? ScavGroupChance { get; set; }
     
     [JsonPropertyName("pmcGroupChance")]
-    public required double PmcGroupChance { get; set; }
+    public double? PmcGroupChance { get; set; }
     
     [JsonPropertyName("pmcMaxGroupSize")]
-    public required int PmcMaxGroupSize { get; set; }
+    public int? PmcMaxGroupSize { get; set; }
     
     [JsonPropertyName("scavMaxGroupSize")]
-    public required int ScavMaxGroupSize { get; set; }
+    public int? ScavMaxGroupSize { get; set; }
     
     [JsonPropertyName("sniperMaxGroupSize")]
-    public required int SniperMaxGroupSize { get; set; }
+    public int? SniperMaxGroupSize { get; set; }
     
     [JsonPropertyName("bossOpenZones")]
-    public required bool BossOpenZones { get; set; }
+    public bool? BossOpenZones { get; set; }
     
     [JsonPropertyName("randomRaiderGroup")]
-    public required bool RandomRaiderGroup { get; set; }
+    public bool? RandomRaiderGroup { get; set; }
     
     [JsonPropertyName("randomRaiderGroupChance")]
-    public required int RandomRaiderGroupChance { get; set; }
+    public int? RandomRaiderGroupChance { get; set; }
     
     [JsonPropertyName("randomRogueGroup")]
-    public required bool RandomRogueGroup { get; set; }
+    public bool? RandomRogueGroup { get; set; }
     
     [JsonPropertyName("randomRogueGroupChance")]
-    public required int RandomRogueGroupChance { get; set; }
+    public int? RandomRogueGroupChance { get; set; }
     
     [JsonPropertyName("disableBosses")]
-    public required bool DisableBosses { get; set; }
+    public bool? DisableBosses { get; set; }
     
     [JsonPropertyName("mainBossChanceBuff")]
-    public required int MainBossChanceBuff { get; set; }
+    public int? MainBossChanceBuff { get; set; }
     
     [JsonPropertyName("bossInvasion")]
-    public required bool BossInvasion { get; set; }
+    public bool? BossInvasion { get; set; }
     
     [JsonPropertyName("bossInvasionSpawnChance")]
-    public required int BossInvasionSpawnChance { get; set; }
+    public int? BossInvasionSpawnChance { get; set; }
     
     [JsonPropertyName("gradualBossInvasion")]
-    public required bool GradualBossInvasion { get; set; }
+    public bool? GradualBossInvasion { get; set; }
     
     [JsonPropertyName("debug")]
-    public required bool Debug { get; set; }
+    public bool? Debug { get; set; }
 }

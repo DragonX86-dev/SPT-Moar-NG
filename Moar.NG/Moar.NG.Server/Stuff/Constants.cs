@@ -4,19 +4,19 @@ public static class Constants
 {
     public static readonly string[] MapList =
     [
-        "bigmap",
-        "factory4_day",
-        "factory4_night",
-        "interchange",
-        "laboratory",
-        "lighthouse",
-        "rezervbase",
-        "shoreline",
-        "tarkovstreets",
-        "labyrinth",
-        "woods",
-        "sandbox",
-        "sandbox_high",
+        "Bigmap",
+        "Factory4Day",
+        "Factory4Night",
+        "Interchange",
+        "Laboratory",
+        "Lighthouse",
+        "RezervBase",
+        "Shoreline",
+        "TarkovStreets",
+        "Labyrinth",
+        "Woods",
+        "Sandbox",
+        "SandboxHigh",
     ];
     
     public static readonly HashSet<string> BossZoneList =
