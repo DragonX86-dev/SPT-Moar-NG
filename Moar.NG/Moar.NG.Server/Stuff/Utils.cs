@@ -1,7 +1,6 @@
 using System.Numerics;
 using System.Text.Json;
 using Moar.NG.Server.Globals;
-using Moar.NG.Server.Models;
 
 namespace Moar.NG.Server.Stuff;
 
@@ -18,11 +17,11 @@ public static class Utils
         return JsonSerializer.Deserialize<T>(json, options)!;
     }
 
-    public static BaseConfig GetRandomOrSelectedPreset()
+    public static Dictionary<string, dynamic> GetRandomOrSelectedPreset()
     {
         if (GlobalValues.ForcedPreset.Equals("custom"))
         {
-            return new BaseConfig(); 
+            return new Dictionary<string, dynamic>(); 
         }
 
         var allPresets = new List<string>();
@@ -59,4 +58,6 @@ public static class Utils
         var random = new Random();
         return random.NextDouble() * 360;
     }
+    
+    
 }

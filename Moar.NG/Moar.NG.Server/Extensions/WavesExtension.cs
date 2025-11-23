@@ -1,12 +1,16 @@
+using System.Text.Json;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
 using Moar.NG.Server.Globals;
+using Moar.NG.Server.Models;
 using Moar.NG.Server.Stuff;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Logging;
+using SPTarkov.Server.Core.Models.Spt.Bots;
 using static Moar.NG.Server.Stuff.Utils;
 
 namespace Moar.NG.Server.Extensions;
@@ -19,13 +23,10 @@ public class WavesExtension(
 {
     public Task OnLoad()
     {
-        if (GlobalValues.BaseConfig.EnableBotSpawning != true) return Task.CompletedTask;
+        if (GlobalValues.MoarConfig.EnableBotSpawning != true) return Task.CompletedTask;
         
         logger.LogWithColor("[MOAR]: Starting up, may the bots ever be in your favour!", LogTextColor.Cyan);
         BuildWaves();
-
-        var preset = GetRandomOrSelectedPreset();
-        logger.LogWithColor($"[MOAR]: Выбран пресет {preset}", LogTextColor.Cyan);
 
         return Task.CompletedTask;
     }
@@ -36,20 +37,34 @@ public class WavesExtension(
         var botConfig = configServer.GetConfig<BotConfig>();
         var locationConfig = configServer.GetConfig<LocationConfig>();
         
-        // Move to ALP
-        locationConfig.FitLootIntoContainerAttempts = 1; 
-        
         locationConfig.RogueLighthouseSpawnTimeSettings.WaitTimeSeconds = 60;
         locationConfig.EnableBotTypeLimits = false;
+        // Move to ALP
+        locationConfig.FitLootIntoContainerAttempts = 1; 
         locationConfig.AddCustomBotWavesToMaps = false;
-        
         locationConfig.CustomWaves = new CustomWaves();
         
         pmcConfig.RemoveExistingPmcWaves = true;
 
         var bots  = databaseServer.GetTables().Bots;
         
-        var config = DeepCopy(GlobalValues.BaseConfig);
+        var config = DeepCopy(GlobalValues.MoarConfig);
+        var preset = GetRandomOrSelectedPreset();
+
+        preset.Keys.ToList().ForEach(key =>
+        {
+            var field = config.GetType().GetProperty(key.Capitalize());
+            if (field != null)
+            {
+                field.SetValue(config, preset[key].ValueKind switch
+                {
+                    JsonValueKind.Number => ((JsonElement) preset[key]).GetNumberValue(),
+                    JsonValueKind.True => true,
+                    JsonValueKind.False => false,
+                    _ => preset[key].ToString() 
+                });
+            }
+        });
         
         var locationsDict = databaseServer.GetTables().Locations.GetDictionary();
         var locationList = GlobalValues.MapList
@@ -63,21 +78,48 @@ public class WavesExtension(
             }
         );
         
-        if (config.StartingPmcs == true && (config.RandomSpawns != true || config.SpawnSmoothing == true)) {
-            logger.Warning("[MOAR-NG] Starting pmcs turned on, turning off cascade system and smoothing.\n");
+        if (config.StartingPmcs  && (config.RandomSpawns || config.SpawnSmoothing)) {
+            logger.Warning("[MOAR] Starting pmcs turned on, turning off cascade system and smoothing.\n");
             config.SpawnSmoothing = false;
             config.RandomSpawns = true;
         }
         
-        /*
-           if (advancedConfig.MarksmanDifficultyChanges) {
-            marksmanChanges(bots);
-          }
-         */
-
+        if (GlobalValues.AdvancedConfig.MarksmanDifficultyChanges) {
+            MakeMarksmanChanges(bots);
+        }
+            
     }
 
-    public void UpdateSpawnLocations(Location[] locations, BaseConfig config)
+    private static void MakeMarksmanChanges(Bots bots)
+    {
+        foreach (var difficulty in bots.Types["marksman"]!.BotDifficulty.Keys
+                     .Select(difficultyKey => bots.Types["marksman"]!.BotDifficulty[difficultyKey]))
+        {
+            difficulty.Core = difficulty.Core with
+            {
+                VisibleAngle = 300,
+                VisibleDistance = 245,
+                ScatteringPerMeter = 0.1f,
+                HearingSense = 2.85f
+            };
+            
+            difficulty.Mind = difficulty.Mind with
+            {
+                BulletFeelDist = 360,
+                ChanceFuckYouOnContact100 = 10
+            };
+            
+            difficulty.Hearing = difficulty.Hearing with
+            {
+                ChanceToHearSimpleSound01 = 0.7f,
+                DispersionCoef = 3.6f,
+                CloseDist = 10,
+                FarDist = 30
+            };
+        }
+    }
+
+    public void UpdateSpawnLocations(Location[] locations, MoarConfig config)
     {
         throw new NotImplementedException();
     }

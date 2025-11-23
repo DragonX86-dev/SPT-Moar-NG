@@ -14,7 +14,7 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (GlobalValues.BaseConfig.EnableBotSpawning != true) return Task.CompletedTask;
+        if (!GlobalValues.MoarConfig.EnableBotSpawning) return Task.CompletedTask;
         
         SetupSpawns();
 
@@ -89,7 +89,10 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
             
             if (GlobalValues.AdvancedConfig.ActivateSpawnCullingOnServerStart)
             {
-                // Add ```advancedConfig.ActivateSpawnCullingOnServerStart``` block
+                GlobalValues.ScavSpawns[map] = RemoveClosestSpawnsFromCustomBots(map, GlobalValues.ScavSpawns, scavSpawns);
+                GlobalValues.PmcSpawns[map] = RemoveClosestSpawnsFromCustomBots(map, GlobalValues.PmcSpawns, pmcSpawns);
+                GlobalValues.PlayerSpawns[map] = RemoveClosestSpawnsFromCustomBots(map, GlobalValues.PlayerSpawns, pmcSpawns);
+                GlobalValues.SniperSpawns[map] = RemoveClosestSpawnsFromCustomBots(map, GlobalValues.SniperSpawns, sniperSpawns);
             }
 
             var limit = GlobalValues.MapsConfig[map].SpawnMinDistance;
@@ -98,14 +101,7 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
                 map,
                 locationsDict[map].Base.SpawnPointParams!
             );
-            
-
-
-
-
         }
-        
-        
     }
 
     private static IEnumerable<SpawnPointParam> BuildCustomPlayerSpawnPoints(string mapName, IEnumerable<SpawnPointParam> refSpawns)
@@ -153,7 +149,7 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
                 },
                 CorePointId = 0,
                 DelayToCanSpawnSec = 4,
-                Infiltration = GetClosestInfil((double)point.X!, (double)point.Y!, (double)point.Z!),
+                Infiltration = GetClosestInfiltration((double)point.X!, (double)point.Y!, (double)point.Z!),
                 Position = point,
                 Rotation = Random360(),
                 Sides = ["Pmc"]
@@ -162,9 +158,9 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
         
         return playerOnlySpawns.Concat(playerSpawns);
 
-        string GetClosestInfil(double x, double y, double z)
+        string GetClosestInfiltration(double x, double y, double z)
         {
-            var selectedInfil = "";
+            var selectedInfiltration = "";
             var closest = double.PositiveInfinity;
 
             foreach (var spawn in playerOnlySpawns)
@@ -177,12 +173,17 @@ public class SpawnsExtension(DatabaseServer databaseServer) : IOnLoad
 
                 if (!(dist < closest)) continue;
                 
-                selectedInfil = spawn.Infiltration;
+                selectedInfiltration = spawn.Infiltration;
                 closest = dist;
             }
 
-            return selectedInfil;
+            return selectedInfiltration;
         }
     }
-    
+
+    private XYZ[] RemoveClosestSpawnsFromCustomBots(string mapName, Dictionary<string, XYZ[]> customBots, 
+        List<SpawnPointParam> spawnPointParams)
+    {
+        throw new NotImplementedException();
+    } 
 }

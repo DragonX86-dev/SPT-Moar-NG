@@ -11,13 +11,13 @@ namespace Moar.NG.Server.Globals;
 [Injectable (InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader)]
 public class GlobalValues(ModHelper modHelper) : IOnLoad
 {
-    public static BaseConfig BaseConfig { get; private set; } = null!;
+    public static MoarConfig MoarConfig { get; private set; } = null!;
     
     public static AdvancedConfig AdvancedConfig { get; private set; } = null!;
     
     public static Dictionary<string, int> PresetWeightings { get; private set; } = new();
     
-    public static Dictionary<string, BaseConfig> Presets { get; private set; } = new();
+    public static Dictionary<string, Dictionary<string, dynamic>> Presets { get; private set; } = new();
     
     public static Dictionary<string, MapConfig> MapsConfig { get; private set; } = new();
     
@@ -45,10 +45,10 @@ public class GlobalValues(ModHelper modHelper) : IOnLoad
     {
         var modPath = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         
-        BaseConfig = modHelper.GetJsonDataFromFile<BaseConfig>(modPath, Path.Combine("data", "config.json"));
+        MoarConfig = modHelper.GetJsonDataFromFile<MoarConfig>(modPath, Path.Combine("data", "config.json"));
         AdvancedConfig = modHelper.GetJsonDataFromFile<AdvancedConfig>(modPath, Path.Combine("data", "advancedConfig.json"));
         PresetWeightings = modHelper.GetJsonDataFromFile<Dictionary<string, int>>(modPath, Path.Combine("data", "presetWeightings.json"));
-        Presets = modHelper.GetJsonDataFromFile<Dictionary<string, BaseConfig>>(modPath, Path.Combine("data", "presets.json"));
+        Presets = modHelper.GetJsonDataFromFile<Dictionary<string, Dictionary<string, dynamic>>>(modPath, Path.Combine("data", "presets.json"));
         MapsConfig = modHelper.GetJsonDataFromFile<Dictionary<string, MapConfig>>(modPath, Path.Combine("data", "mapConfig.json"));
         PlayerSpawns = modHelper.GetJsonDataFromFile<Dictionary<string, XYZ[]>>(modPath, Path.Combine("data", "playerSpawns.json"));
         PmcSpawns = modHelper.GetJsonDataFromFile<Dictionary<string, XYZ[]>>(modPath, Path.Combine("data", "pmcSpawns.json"));

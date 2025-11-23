@@ -35,8 +35,8 @@ public record MapConfig
     public required int ZombieWaveCount { get; init; }
 
     [JsonPropertyName("scavHotZones")]
-    public required string[] ScavHotZones { get; init; }
+    public string[]? ScavHotZones { get; init; }
     
     [JsonPropertyName("pmcHotZones")]
-    public required string[] PmcHotZones { get; init; }
+    public string[]? PmcHotZones { get; init; }
 }

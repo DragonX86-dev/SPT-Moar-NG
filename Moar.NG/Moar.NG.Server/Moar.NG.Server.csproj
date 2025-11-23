@@ -6,10 +6,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Version>1.0.0</Version>
+        <RootFolder>C:/Games/Escape from Tarkov</RootFolder>
     </PropertyGroup>
-
+<!---->
+<!--    <Target Name="RemoveDirectories" BeforeTargets="BeforeBuild">-->
+<!--        <RemoveDir Directories="./bin/;./build/;./dist/" />-->
+<!--    </Target>-->
     <Target Name="RemoveDirectories" BeforeTargets="BeforeBuild">
-        <RemoveDir Directories="./bin/;./build/;./dist/" />
+        <RemoveDir Directories="./bin/;./build/;$(RootFolder)/SPT/user/mods/$(AssemblyName)/" />
     </Target>
 
     <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
@@ -17,17 +21,17 @@
             <DataFiles Include="bin\$(Configuration)\$(TargetFramework)\data\**\*" />
         </ItemGroup>
         <Copy SourceFiles="bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).dll"
-              DestinationFolder="./build/SPT/user/mods/$(AssemblyName)/" />
+              DestinationFolder="$(RootFolder)/SPT/user/mods/$(AssemblyName)/" />
         <Copy SourceFiles="@(DataFiles)"
-              DestinationFolder="./build/SPT/user/mods/$(AssemblyName)/data/%(RecursiveDir)"
+              DestinationFolder="$(RootFolder)/SPT/user/mods/$(AssemblyName)/data/%(RecursiveDir)"
               SkipUnchangedFiles="true" Condition="'@(DataFiles)' != ''" />
     </Target>
 
-    <Target Name="ZipOutputPath" AfterTargets="Build">
-        <MakeDir Directories="./dist" Condition="!Exists('./dist')" />
-        <Delete Files="./dist/$(AssemblyName)-$(Version).zip" Condition="Exists('./dist/$(AssemblyName)-$(Version).zip')" />
-        <ZipDirectory SourceDirectory="./build" DestinationFile="./dist/$(AssemblyName)-$(Version).zip" />
-    </Target>
+<!--    <Target Name="ZipOutputPath" AfterTargets="Build">-->
+<!--        <MakeDir Directories="./dist" Condition="!Exists('./dist')" />-->
+<!--        <Delete Files="./dist/$(AssemblyName)-$(Version).zip" Condition="Exists('./dist/$(AssemblyName)-$(Version).zip')" />-->
+<!--        <ZipDirectory SourceDirectory="./build" DestinationFile="./dist/$(AssemblyName)-$(Version).zip" />-->
+<!--    </Target>-->
 
     <ItemGroup>
         <PackageReference Include="SPTarkov.Common" Version="4.0.6" />
@@ -46,6 +50,27 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="Data\presetWeightings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\bossZoneList.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\sniperSpawns.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\scavSpawns.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\pmcSpawns.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\playerSpawns.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\mapList.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="data\mapConfig.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
