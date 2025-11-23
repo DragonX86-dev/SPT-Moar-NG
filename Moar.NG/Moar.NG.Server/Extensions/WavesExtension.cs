@@ -5,6 +5,7 @@ using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
 using Moar.NG.Server.Globals;
 using Moar.NG.Server.Stuff;
+using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Logging;
 using static Moar.NG.Server.Stuff.Utils;
 
@@ -51,7 +52,7 @@ public class WavesExtension(
         var config = DeepCopy(GlobalValues.BaseConfig);
         
         var locationsDict = databaseServer.GetTables().Locations.GetDictionary();
-        var locationList = Constants.MapList
+        var locationList = GlobalValues.MapList
             .Select(mapName => locationsDict[mapName] with { Base = DeepCopy(locationsDict[mapName].Base) })
             .ToArray();
         
@@ -76,7 +77,8 @@ public class WavesExtension(
 
     }
 
-    
-
-    
+    public void UpdateSpawnLocations(Location[] locations, BaseConfig config)
+    {
+        throw new NotImplementedException();
+    }
 }

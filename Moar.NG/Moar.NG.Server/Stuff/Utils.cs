@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text.Json;
 using Moar.NG.Server.Globals;
 using Moar.NG.Server.Models;
@@ -17,11 +18,11 @@ public static class Utils
         return JsonSerializer.Deserialize<T>(json, options)!;
     }
 
-    public static string GetRandomOrSelectedPreset()
+    public static BaseConfig GetRandomOrSelectedPreset()
     {
         if (GlobalValues.ForcedPreset.Equals("custom"))
         {
-            return "custom"; 
+            return new BaseConfig(); 
         }
 
         var allPresets = new List<string>();
@@ -36,11 +37,26 @@ public static class Utils
         var selectedPreset = allPresets[random.Next(allPresets.Count)];
         GlobalValues.CurrentPreset = selectedPreset;
 
-        return selectedPreset; 
+        return GlobalValues.Presets[selectedPreset]; 
     }
-
-    public static BaseConfig GetPresetData(string presetName)
+    
+    public static List<T> Shuffle<T>(List<T> list)
     {
-        return GlobalValues.Presets[presetName];
-    } 
+        var random = new Random();
+        return list.OrderBy(x => random.Next()).ToList();
+    }
+    
+    public static double GetDistance(double x, double y, double z, double mX, double mY, double mZ)
+    {
+        var point1 = new Vector3((float)x, (float)y, (float)z);
+        var point2 = new Vector3((float)mX, (float)mY, (float)mZ);
+    
+        return Vector3.Distance(point1, point2);
+    }
+    
+    public static double Random360()
+    {
+        var random = new Random();
+        return random.NextDouble() * 360;
+    }
 }
