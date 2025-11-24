@@ -20,7 +20,7 @@ public static class SpawnUtils
         return Vector3.Distance(point1, point2);
     }
 
-    public static SpawnPointParam[] GetSortedSpawnPointList(SpawnPointParam[] spawnPointParams, XYZ coords, 
+    public static List<SpawnPointParam> GetSortedSpawnPointList(List<SpawnPointParam> spawnPointParams, XYZ coords, 
         float cull = 0.0f)
     {
         var sorted = spawnPointParams
@@ -28,14 +28,14 @@ public static class SpawnUtils
             .Where((_, index) =>
             {
                 if (cull == 0.0f) return true;
-                return index > spawnPointParams.Length * cull;
+                return index > spawnPointParams.Count * cull;
             })
             .ToList();
         
-        return sorted.ToArray();
+        return sorted;
     }
     
-    public static SpawnPointParam[] CleanClosest(SpawnPointParam[] spawnPointParams, int mapCullingNearPointValue)
+    public static List<SpawnPointParam> CleanClosest(List<SpawnPointParam> spawnPointParams, int mapCullingNearPointValue)
     {
         var okayList = new HashSet<string>();
         var filteredParams = spawnPointParams.Select(point =>
@@ -58,17 +58,17 @@ public static class SpawnUtils
             };
         });
 
-        return filteredParams.Where(point => point.Categories!.Any()).ToArray();
+        return filteredParams.Where(point => point.Categories!.Any()).ToList();
     }
 
-    public static SpawnPointParam[] AddCustomPmcSpawnPoints(SpawnPointParam[] spawnPointParams, string mapName)
+    public static List<SpawnPointParam> AddCustomPmcSpawnPoints(List<SpawnPointParam> spawnPointParams, string mapName)
     {
-        if (GlobalValues.PmcSpawns[mapName].Length == 0)
+        if (GlobalValues.PmcSpawnPoints[mapName].Length == 0)
         {
             return spawnPointParams;
         }
 
-        var playerSpawns = GlobalValues.PmcSpawns[mapName].Select((coords, index) => 
+        var playerSpawns = GlobalValues.PmcSpawnPoints[mapName].Select((coords, index) => 
             new SpawnPointParam {
                 Id = Guid.NewGuid().ToString(),
                 BotZoneName = GetClosestZone(spawnPointParams, coords),
@@ -96,17 +96,17 @@ public static class SpawnUtils
             }
         );
         
-        return spawnPointParams.Concat(playerSpawns).ToArray();
+        return spawnPointParams.Concat(playerSpawns).ToList();
     }
     
-    public static SpawnPointParam[] AddCustomBotSpawnPoints(SpawnPointParam[] spawnPointParams, string mapName)
+    public static List<SpawnPointParam> AddCustomBotSpawnPoints(List<SpawnPointParam> spawnPointParams, string mapName)
     {
-        if (GlobalValues.ScavSpawns[mapName].Length == 0)
+        if (GlobalValues.ScavSpawnPoints[mapName].Length == 0)
         {
             return spawnPointParams;
         }
 
-        var scavSpawns = GlobalValues.ScavSpawns[mapName].Select(coords => 
+        var scavSpawns = GlobalValues.ScavSpawnPoints[mapName].Select(coords => 
             new SpawnPointParam {
                 Id = Guid.NewGuid().ToString(),
                 BotZoneName = GetClosestZone(spawnPointParams, coords),
@@ -134,17 +134,17 @@ public static class SpawnUtils
             }
         );
         
-        return spawnPointParams.Concat(scavSpawns).ToArray();
+        return spawnPointParams.Concat(scavSpawns).ToList();
     }
 
-    public static SpawnPointParam[] AddCustomSniperSpawnPoints(SpawnPointParam[] spawnPointParams, string mapName)
+    public static List<SpawnPointParam> AddCustomSniperSpawnPoints(List<SpawnPointParam> spawnPointParams, string mapName)
     {
-        if (GlobalValues.SniperSpawns[mapName].Length == 0)
+        if (GlobalValues.SniperSpawnPoints[mapName].Length == 0)
         {
             return spawnPointParams;
         }
 
-        var sniperSpawns = GlobalValues.SniperSpawns[mapName].Select((coords, index) =>
+        var sniperSpawns = GlobalValues.SniperSpawnPoints[mapName].Select((coords, index) =>
             new SpawnPointParam {
                 Id = Guid.NewGuid().ToString(),
                 BotZoneName = GetClosestZone(spawnPointParams, coords) + $"custom_snipe_{index}",
@@ -172,10 +172,10 @@ public static class SpawnUtils
             }
         );
         
-        return spawnPointParams.Concat(sniperSpawns).ToArray();
+        return spawnPointParams.Concat(sniperSpawns).ToList();
     }
 
-    public static SpawnPointParam[] BuildCustomPlayerSpawnPoints(string mapName, SpawnPointParam[] refSpawns)
+    public static List<SpawnPointParam> BuildCustomPlayerSpawnPoints(string mapName, List<SpawnPointParam> refSpawns)
     {
         var playerOnlySpawns = refSpawns
             .Where(item => !string.IsNullOrEmpty(item.Infiltration) &&
@@ -193,14 +193,14 @@ public static class SpawnUtils
                     Sides = ["Pmc"]
                 };
             })
-            .ToArray();
+            .ToList();
 
-        if (GlobalValues.PlayerSpawns[mapName].Length == 0)
+        if (GlobalValues.PlayerSpawnPoints[mapName].Length == 0)
         {
             return playerOnlySpawns;
         }
 
-        var playerSpawns = GlobalValues.PlayerSpawns[mapName].Select(point =>
+        var playerSpawns = GlobalValues.PlayerSpawnPoints[mapName].Select(point =>
             new SpawnPointParam
             {
                 Id = Guid.NewGuid().ToString(),
@@ -229,7 +229,7 @@ public static class SpawnUtils
             }
         );
 
-        return playerOnlySpawns.Concat(playerSpawns).ToArray();
+        return playerOnlySpawns.Concat(playerSpawns).ToList();
 
         string GetClosestInfiltration(double x, double y, double z)
         {
@@ -259,21 +259,20 @@ public static class SpawnUtils
         }
     }
 
-    private static string GetClosestZone(SpawnPointParam[] spawnPointParams, XYZ coords)
+    public static string GetClosestZone(List<SpawnPointParam> spawnPointParams, XYZ coords)
     {
         var validPoints = spawnPointParams
             .Where(p => !string.IsNullOrEmpty(p.BotZoneName))
-            .ToArray();
+            .ToList();
 
-        if (validPoints.Length == 0)
+        if (validPoints.Count == 0)
             return "";
 
         var sorted = GetSortedSpawnPointList(validPoints, coords);
         return sorted.First().BotZoneName ?? "";
     } 
     
-    public static XYZ[] RemoveClosestSpawnsFromCustomBots(Dictionary<string, XYZ[]> customBots,
-        List<SpawnPointParam> spawnPointParams, string mapName)
+    public static XYZ[] RemoveClosestSpawnsFromCustomBots(Dictionary<string, XYZ[]> customBots, string mapName)
     {
         if (customBots[mapName].Length == 0)
         {

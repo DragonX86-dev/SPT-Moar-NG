@@ -1,4 +1,6 @@
 using Moar.NG.Server.Globals;
+using Moar.NG.Server.Models;
+using Moar.NG.Server.Models.Enums;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -28,7 +30,6 @@ public class SpawnsController(
     private void SetupSpawns()
     {
         var locationsDict = databaseServer.GetTables().Locations.GetDictionary();
-        var indexedMapSpawns = new Dictionary<int, SpawnPointParam[]>();
 
         foreach (var (map, idx) in GlobalValues.MapList.Select((item, i) => (item, i)))
         {
@@ -95,25 +96,25 @@ public class SpawnsController(
 
             if (GlobalValues.AdvancedConfig.ActivateSpawnCullingOnServerStart)
             {
-                GlobalValues.ScavSpawns[map] =
-                    RemoveClosestSpawnsFromCustomBots(GlobalValues.ScavSpawns, scavSpawns, map);
-                GlobalValues.PmcSpawns[map] =
-                    RemoveClosestSpawnsFromCustomBots(GlobalValues.PmcSpawns, pmcSpawns, map);
-                GlobalValues.PlayerSpawns[map] =
-                    RemoveClosestSpawnsFromCustomBots(GlobalValues.PlayerSpawns, pmcSpawns, map);
-                GlobalValues.SniperSpawns[map] =
-                    RemoveClosestSpawnsFromCustomBots(GlobalValues.SniperSpawns, sniperSpawns, map);
+                GlobalValues.ScavSpawnPoints[map] =
+                    RemoveClosestSpawnsFromCustomBots(GlobalValues.ScavSpawnPoints, map);
+                GlobalValues.PmcSpawnPoints[map] =
+                    RemoveClosestSpawnsFromCustomBots(GlobalValues.PmcSpawnPoints, map);
+                GlobalValues.PlayerSpawnPoints[map] =
+                    RemoveClosestSpawnsFromCustomBots(GlobalValues.PlayerSpawnPoints, map);
+                GlobalValues.SniperSpawnPoints[map] =
+                    RemoveClosestSpawnsFromCustomBots(GlobalValues.SniperSpawnPoints, map);
             }
 
             var limit = GlobalValues.MapsConfig[map].SpawnMinDistance;
 
             var playerSpawns = CleanClosest(
-                BuildCustomPlayerSpawnPoints(map, locationsDict[map].Base.SpawnPointParams!.ToArray()),
+                BuildCustomPlayerSpawnPoints(map, locationsDict[map].Base.SpawnPointParams!.ToList()),
                 GlobalValues.MapsConfig[map].MapCullingNearPointValuePlayer
             );
 
             scavSpawns = CleanClosest(
-                AddCustomBotSpawnPoints(scavSpawns.ToArray(), map),
+                AddCustomBotSpawnPoints(scavSpawns, map),
                 GlobalValues.MapsConfig[map].MapCullingNearPointValueScav
             ).Select(point =>
             {
@@ -124,13 +125,59 @@ public class SpawnsController(
 
                 return point.Categories!.Any() ? point with
                 {
+                    BotZoneName = point.BotZoneName,
                     Categories = ["Bot"],
                     Sides = ["Savage"],
-                    CorePointId =1,
+                    CorePointId = 1,
                 } : point;
             }).ToList();
             
+            pmcSpawns = CleanClosest(
+                AddCustomPmcSpawnPoints(pmcSpawns, map),
+                GlobalValues.MapsConfig[map].MapCullingNearPointValuePmc
+            ).Select(point =>
+            {
+                if (point.ColliderParams!.Properties!.Radius < limit)
+                {
+                    point.ColliderParams.Properties.Radius = limit;
+                }
 
+                return point.Categories!.Any() ? point with
+                {
+                    BotZoneName = GetClosestZone(scavSpawns, point.Position!),
+                    Categories = ["Coop", new Random().NextDouble() < 0.5 ? "Group" : "Opposite"],
+                    Sides = ["Pmc"],
+                    CorePointId = 0
+                } : point;
+            }).ToList();
+            
+            sniperSpawns = AddCustomSniperSpawnPoints(sniperSpawns, map);
+
+            var mapSpawn = 
+            sniperSpawns.Select(e => new MoarSpawnPoint
+            {
+                SpawnPointParam = e,
+                Type = SpawnType.Sniper
+            }).Concat(pmcSpawns.Select(e => new MoarSpawnPoint
+            {
+                SpawnPointParam = e,
+                Type = SpawnType.Pmc
+            })).Concat(scavSpawns.Select(e => new MoarSpawnPoint
+            {
+                SpawnPointParam = e,
+                Type = SpawnType.Scavage
+            })).Concat(playerSpawns.Select(e => new MoarSpawnPoint
+            {
+                SpawnPointParam = e,
+                Type = SpawnType.Player
+            })).Concat(bossSpawns.Select(e => new MoarSpawnPoint
+            {
+                SpawnPointParam = e,
+                Type = SpawnType.Boss
+            })).ToArray();
+            
+            locationsDict[map].Base.SpawnPointParams = mapSpawn.Select(e => e.SpawnPointParam).ToList();
+            GlobalValues.NamedMapSpawns[map] = mapSpawn;
         }
     }
 }

@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Moar.NG.Server.Routes.Models.Enums;
+using Moar.NG.Server.Models.Enums;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Utils;
 
