@@ -1,33 +1,39 @@
+using System.Reflection;
 using System.Text.Json;
-using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Servers;
 using Moar.NG.Server.Globals;
 using Moar.NG.Server.Models;
 using Moar.NG.Server.Stuff;
+using Moar.NG.Server.Stuff.Common;
+using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.DI;
+using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
-using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Logging;
 using SPTarkov.Server.Core.Models.Spt.Bots;
-using static Moar.NG.Server.Stuff.Utils;
+using SPTarkov.Server.Core.Models.Spt.Config;
+using SPTarkov.Server.Core.Models.Utils;
+using SPTarkov.Server.Core.Servers;
+using SPTarkov.Server.Core.Utils;
+using static Moar.NG.Server.Stuff.Common.CommonUtils;
 
-namespace Moar.NG.Server.Extensions;
+namespace Moar.NG.Server.Controllers;
 
 [Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
-public class WavesExtension(
+public class WavesController(
+    JsonUtil jsonUtil,
+    ModHelper modHelper,
     ConfigServer configServer,
     DatabaseServer databaseServer,
-    ISptLogger<WavesExtension> logger) : IOnLoad
+    ISptLogger<WavesController> logger) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (GlobalValues.MoarConfig.EnableBotSpawning != true) return Task.CompletedTask;
+        if (!GlobalValues.MoarConfig.EnableBotSpawning) return Task.CompletedTask;
         
         logger.LogWithColor("[MOAR]: Starting up, may the bots ever be in your favour!", LogTextColor.Cyan);
         BuildWaves();
-
+        
         return Task.CompletedTask;
     }
     

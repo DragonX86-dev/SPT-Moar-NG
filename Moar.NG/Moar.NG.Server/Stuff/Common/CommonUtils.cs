@@ -1,10 +1,9 @@
-using System.Numerics;
 using System.Text.Json;
 using Moar.NG.Server.Globals;
 
-namespace Moar.NG.Server.Stuff;
+namespace Moar.NG.Server.Stuff.Common;
 
-public static class Utils
+public static class CommonUtils
 {
     public static T DeepCopy<T>(T obj)
     {
@@ -39,25 +38,9 @@ public static class Utils
         return GlobalValues.Presets[selectedPreset]; 
     }
     
-    public static List<T> Shuffle<T>(List<T> list)
+    public static IEnumerable<T> Shuffle<T>(IEnumerable<T> list)
     {
         var random = new Random();
-        return list.OrderBy(x => random.Next()).ToList();
+        return list.OrderBy(x => random.Next());
     }
-    
-    public static double GetDistance(double x, double y, double z, double mX, double mY, double mZ)
-    {
-        var point1 = new Vector3((float)x, (float)y, (float)z);
-        var point2 = new Vector3((float)mX, (float)mY, (float)mZ);
-    
-        return Vector3.Distance(point1, point2);
-    }
-    
-    public static double Random360()
-    {
-        var random = new Random();
-        return random.NextDouble() * 360;
-    }
-    
-    
 }

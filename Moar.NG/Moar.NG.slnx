@@ -1,3 +1,4 @@
 ﻿<Solution>
+	<Project Path="Moar.NG.Server.Tests/Moar.NG.Server.Tests.csproj" />
 	<Project Path="Moar.NG.Server/Moar.NG.Server.csproj" />
 </Solution>

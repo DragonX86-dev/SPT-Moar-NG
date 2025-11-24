@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Version>1.0.0</Version>
-        <RootFolder>C:/Games/Escape from Tarkov</RootFolder>
+        <RootFolder>C:\Program Files\EFT</RootFolder>
     </PropertyGroup>
 <!---->
 <!--    <Target Name="RemoveDirectories" BeforeTargets="BeforeBuild">-->
