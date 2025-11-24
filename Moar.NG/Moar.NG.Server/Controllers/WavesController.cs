@@ -1,28 +1,21 @@
-using System.Reflection;
 using System.Text.Json;
 using Moar.NG.Server.Globals;
 using Moar.NG.Server.Models;
 using Moar.NG.Server.Stuff;
-using Moar.NG.Server.Stuff.Common;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Helpers;
-using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Logging;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Utils;
-using static Moar.NG.Server.Stuff.Common.CommonUtils;
+using static Moar.NG.Server.Stuff.Utils.CommonUtils;
 
 namespace Moar.NG.Server.Controllers;
 
 [Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
 public class WavesController(
-    JsonUtil jsonUtil,
-    ModHelper modHelper,
     ConfigServer configServer,
     DatabaseServer databaseServer,
     ISptLogger<WavesController> logger) : IOnLoad

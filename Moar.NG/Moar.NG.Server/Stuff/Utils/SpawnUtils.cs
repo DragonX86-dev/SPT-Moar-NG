@@ -2,9 +2,9 @@
 using Moar.NG.Server.Globals;
 using SPTarkov.Server.Core.Models.Eft.Common;
 
-namespace Moar.NG.Server.Stuff.Spawn;
+namespace Moar.NG.Server.Stuff.Utils;
 
-public static class SpawnZoneUtils
+public static class SpawnUtils
 {
     private static double Random360()
     {

@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Moar.NG.Server.Stuff.Common;
+namespace Moar.NG.Server.Stuff;
 
 public static class Extensions
 {

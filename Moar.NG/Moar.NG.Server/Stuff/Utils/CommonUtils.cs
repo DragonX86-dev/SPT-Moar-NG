@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Moar.NG.Server.Globals;
 
-namespace Moar.NG.Server.Stuff.Common;
+namespace Moar.NG.Server.Stuff.Utils;
 
 public static class CommonUtils
 {

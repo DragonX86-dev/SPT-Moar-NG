@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using SPTarkov.Server.Core.Models.Common;
 
-namespace Moar.NG.Server.Stuff.Common;
+namespace Moar.NG.Server.Stuff;
 
 public class MongoIdConverter : JsonConverter<MongoId>
 {
