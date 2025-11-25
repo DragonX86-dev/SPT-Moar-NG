@@ -34,7 +34,7 @@ public class SpawnsController(
             var sniperSpawns = new List<SpawnPointParam>();
             var pmcSpawns = new List<SpawnPointParam>();
 
-            var bossZoneList = GlobalValues.BossZoneList;
+            var bossZoneList = GlobalConstants.BossZoneList;
 
             foreach (var point in Shuffle(locationsDict[map].Base.SpawnPointParams!))
             {
@@ -69,16 +69,16 @@ public class SpawnsController(
                     RemoveClosestSpawnsFromCustomBots(GlobalSpawnData.SniperSpawnPoints, map);
             }
 
-            var limit = GlobalValues.MapsConfig[map].SpawnMinDistance;
+            var limit = GlobalValues.MapConfig[map].SpawnMinDistance;
 
             var playerSpawns = CleanClosest(
                 BuildCustomPlayerSpawnPoints(map, locationsDict[map].Base.SpawnPointParams!.ToList()),
-                GlobalValues.MapsConfig[map].MapCullingNearPointValuePlayer
+                GlobalValues.MapConfig[map].MapCullingNearPointValuePlayer
             );
 
             scavSpawns = CleanClosest(
                 AddCustomBotSpawnPoints(scavSpawns, map),
-                GlobalValues.MapsConfig[map].MapCullingNearPointValueScav
+                GlobalValues.MapConfig[map].MapCullingNearPointValueScav
             ).Select(point =>
             {
                 if (point.ColliderParams!.Properties!.Radius < limit)
@@ -97,7 +97,7 @@ public class SpawnsController(
             
             pmcSpawns = CleanClosest(
                 AddCustomPmcSpawnPoints(pmcSpawns, map),
-                GlobalValues.MapsConfig[map].MapCullingNearPointValuePmc
+                GlobalValues.MapConfig[map].MapCullingNearPointValuePmc
             ).Select(point =>
             {
                 if (point.ColliderParams!.Properties!.Radius < limit)

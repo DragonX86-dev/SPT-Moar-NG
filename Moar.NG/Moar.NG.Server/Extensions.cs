@@ -19,6 +19,11 @@ public static class Extensions
         return element.GetDouble();
     }
 
+    public static string CombinePaths(this string[] folders)
+    {
+        return folders.Aggregate(string.Empty, Path.Combine);
+    } 
+
     public static SpawnPointParam GetRandomSpawnPoint(this SpawnPointParam[] spawnPoints)
     {
         if (spawnPoints == null || spawnPoints.Length == 0)

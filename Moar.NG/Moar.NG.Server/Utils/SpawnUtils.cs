@@ -280,7 +280,7 @@ public static class SpawnUtils
         }
         
         var coords = customBots[mapName];
-        var mapConfig = GlobalValues.MapsConfig[mapName];
+        var mapConfig = GlobalValues.MapConfig[mapName];
 
         var mapCullingNearPointValue = (mapConfig.MapCullingNearPointValuePlayer +
                                         mapConfig.MapCullingNearPointValuePmc +

@@ -43,9 +43,6 @@ public record MoarConfig
     [JsonPropertyName("zombieWaveQuantity")]
     public required double ZombieWaveQuantity { get; set; }
     
-    [JsonPropertyName("zombieHealth")]
-    public required double ZombieHealth { get; set; }
-    
     [JsonPropertyName("maxBotCap")]
     public required int MaxBotCap { get; set; }
     

@@ -81,6 +81,7 @@ public class WavesController(
         }
         
         var bots  = databaseServer.GetTables().Bots;
+        
         if (GlobalValues.AdvancedConfig.MarksmanDifficultyChanges) {
             MakeMarksmanChanges(bots);
         }
@@ -91,10 +92,11 @@ public class WavesController(
         
         //Zombies
         if (GlobalValues.MoarConfig.ZombiesEnabled) {
-            // buildZombieWaves(config, locationList, bots);
+            BuildZombieWaves(locationList, config);
         }
 
         BuildPmcWaves(locationList, config);
+        
 
 
     }
