@@ -2,7 +2,7 @@
 using Moar.NG.Server.Globals;
 using SPTarkov.Server.Core.Models.Eft.Common;
 
-namespace Moar.NG.Server.Stuff.Utils;
+namespace Moar.NG.Server.Utils;
 
 public static class SpawnUtils
 {
@@ -20,7 +20,7 @@ public static class SpawnUtils
         return Vector3.Distance(point1, point2);
     }
 
-    public static List<SpawnPointParam> GetSortedSpawnPointList(List<SpawnPointParam> spawnPointParams, XYZ coords, 
+    public static SpawnPointParam[] GetSortedSpawnPointList(SpawnPointParam[] spawnPointParams, XYZ coords, 
         float cull = 0.0f)
     {
         var sorted = spawnPointParams
@@ -28,9 +28,9 @@ public static class SpawnUtils
             .Where((_, index) =>
             {
                 if (cull == 0.0f) return true;
-                return index > spawnPointParams.Count * cull;
+                return index > spawnPointParams.Length * cull;
             })
-            .ToList();
+            .ToArray();
         
         return sorted;
     }
@@ -63,12 +63,12 @@ public static class SpawnUtils
 
     public static List<SpawnPointParam> AddCustomPmcSpawnPoints(List<SpawnPointParam> spawnPointParams, string mapName)
     {
-        if (GlobalValues.PmcSpawnPoints[mapName].Length == 0)
+        if (GlobalSpawnData.PmcSpawnPoints[mapName].Length == 0)
         {
             return spawnPointParams;
         }
 
-        var playerSpawns = GlobalValues.PmcSpawnPoints[mapName].Select((coords, index) => 
+        var playerSpawns = GlobalSpawnData.PmcSpawnPoints[mapName].Select(coords => 
             new SpawnPointParam {
                 Id = Guid.NewGuid().ToString(),
                 BotZoneName = GetClosestZone(spawnPointParams, coords),
@@ -101,12 +101,12 @@ public static class SpawnUtils
     
     public static List<SpawnPointParam> AddCustomBotSpawnPoints(List<SpawnPointParam> spawnPointParams, string mapName)
     {
-        if (GlobalValues.ScavSpawnPoints[mapName].Length == 0)
+        if (GlobalSpawnData.ScavSpawnPoints[mapName].Length == 0)
         {
             return spawnPointParams;
         }
 
-        var scavSpawns = GlobalValues.ScavSpawnPoints[mapName].Select(coords => 
+        var scavSpawns = GlobalSpawnData.ScavSpawnPoints[mapName].Select(coords => 
             new SpawnPointParam {
                 Id = Guid.NewGuid().ToString(),
                 BotZoneName = GetClosestZone(spawnPointParams, coords),
@@ -139,12 +139,12 @@ public static class SpawnUtils
 
     public static List<SpawnPointParam> AddCustomSniperSpawnPoints(List<SpawnPointParam> spawnPointParams, string mapName)
     {
-        if (GlobalValues.SniperSpawnPoints[mapName].Length == 0)
+        if (GlobalSpawnData.SniperSpawnPoints[mapName].Length == 0)
         {
             return spawnPointParams;
         }
 
-        var sniperSpawns = GlobalValues.SniperSpawnPoints[mapName].Select((coords, index) =>
+        var sniperSpawns = GlobalSpawnData.SniperSpawnPoints[mapName].Select((coords, index) =>
             new SpawnPointParam {
                 Id = Guid.NewGuid().ToString(),
                 BotZoneName = GetClosestZone(spawnPointParams, coords) + $"custom_snipe_{index}",
@@ -195,12 +195,12 @@ public static class SpawnUtils
             })
             .ToList();
 
-        if (GlobalValues.PlayerSpawnPoints[mapName].Length == 0)
+        if (GlobalSpawnData.PlayerSpawnPoints[mapName].Length == 0)
         {
             return playerOnlySpawns;
         }
 
-        var playerSpawns = GlobalValues.PlayerSpawnPoints[mapName].Select(point =>
+        var playerSpawns = GlobalSpawnData.PlayerSpawnPoints[mapName].Select(point =>
             new SpawnPointParam
             {
                 Id = Guid.NewGuid().ToString(),
@@ -263,9 +263,9 @@ public static class SpawnUtils
     {
         var validPoints = spawnPointParams
             .Where(p => !string.IsNullOrEmpty(p.BotZoneName))
-            .ToList();
+            .ToArray();
 
-        if (validPoints.Count == 0)
+        if (validPoints.Length == 0)
             return "";
 
         var sorted = GetSortedSpawnPointList(validPoints, coords);

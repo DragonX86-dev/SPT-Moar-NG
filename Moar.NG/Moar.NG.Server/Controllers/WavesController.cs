@@ -1,21 +1,20 @@
 using System.Text.Json;
 using Moar.NG.Server.Globals;
-using Moar.NG.Server.Models;
-using Moar.NG.Server.Stuff;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Logging;
-using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
-using static Moar.NG.Server.Stuff.Utils.CommonUtils;
+using SPTarkov.Server.Core.Utils.Cloners;
+using static Moar.NG.Server.Utils.CommonUtils;
+using static Moar.NG.Server.Utils.WaveUtils;
 
 namespace Moar.NG.Server.Controllers;
 
 [Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
 public class WavesController(
+    ICloner cloner,
     ConfigServer configServer,
     DatabaseServer databaseServer,
     ISptLogger<WavesController> logger) : IOnLoad
@@ -44,10 +43,8 @@ public class WavesController(
         locationConfig.CustomWaves = new CustomWaves();
         
         pmcConfig.RemoveExistingPmcWaves = true;
-
-        var bots  = databaseServer.GetTables().Bots;
         
-        var config = DeepCopy(GlobalValues.MoarConfig);
+        var config = cloner.Clone(GlobalValues.MoarConfig)!;
         var preset = GetRandomOrSelectedPreset();
 
         preset.Keys.ToList().ForEach(key =>
@@ -66,9 +63,9 @@ public class WavesController(
         });
         
         var locationsDict = databaseServer.GetTables().Locations.GetDictionary();
-        var locationList = GlobalValues.MapList
-            .Select(mapName => locationsDict[mapName] with { Base = DeepCopy(locationsDict[mapName].Base) })
-            .ToArray();
+        var locationList = GlobalConstants.MapList
+            .Select(mapName => cloner.Clone(locationsDict[mapName])!)
+            .ToList();
         
         pmcConfig.RemoveExistingPmcWaves = true;
         pmcConfig.CustomPmcWaves.Keys.ToList().ForEach(key =>
@@ -77,49 +74,28 @@ public class WavesController(
             }
         );
         
-        if (config.StartingPmcs  && (config.RandomSpawns || config.SpawnSmoothing)) {
+        if (config.StartingPmcs  && (!config.RandomSpawns || config.SpawnSmoothing)) {
             logger.Warning("[MOAR] Starting pmcs turned on, turning off cascade system and smoothing.\n");
             config.SpawnSmoothing = false;
             config.RandomSpawns = true;
         }
         
+        var bots  = databaseServer.GetTables().Bots;
         if (GlobalValues.AdvancedConfig.MarksmanDifficultyChanges) {
             MakeMarksmanChanges(bots);
         }
-            
-    }
+        
+        UpdateSpawnLocations(locationList, config);
 
-    private static void MakeMarksmanChanges(Bots bots)
-    {
-        foreach (var difficulty in bots.Types["marksman"]!.BotDifficulty.Keys
-                     .Select(difficultyKey => bots.Types["marksman"]!.BotDifficulty[difficultyKey]))
-        {
-            difficulty.Core = difficulty.Core with
-            {
-                VisibleAngle = 300,
-                VisibleDistance = 245,
-                ScatteringPerMeter = 0.1f,
-                HearingSense = 2.85f
-            };
-            
-            difficulty.Mind = difficulty.Mind with
-            {
-                BulletFeelDist = 360,
-                ChanceFuckYouOnContact100 = 10
-            };
-            
-            difficulty.Hearing = difficulty.Hearing with
-            {
-                ChanceToHearSimpleSound01 = 0.7f,
-                DispersionCoef = 3.6f,
-                CloseDist = 10,
-                FarDist = 30
-            };
+        BuildBossWaves(locationList, config);
+        
+        //Zombies
+        if (GlobalValues.MoarConfig.ZombiesEnabled) {
+            // buildZombieWaves(config, locationList, bots);
         }
-    }
 
-    public void UpdateSpawnLocations(Location[] locations, MoarConfig config)
-    {
-        throw new NotImplementedException();
+        BuildPmcWaves(locationList, config);
+
+
     }
 }

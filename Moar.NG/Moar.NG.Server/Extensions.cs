@@ -1,6 +1,7 @@
 using System.Text.Json;
+using SPTarkov.Server.Core.Models.Eft.Common;
 
-namespace Moar.NG.Server.Stuff;
+namespace Moar.NG.Server;
 
 public static class Extensions
 {
@@ -16,6 +17,16 @@ public static class Extensions
             return decimalValue;
     
         return element.GetDouble();
+    }
+
+    public static SpawnPointParam GetRandomSpawnPoint(this SpawnPointParam[] spawnPoints)
+    {
+        if (spawnPoints == null || spawnPoints.Length == 0)
+            throw new ArgumentException("Array cannot be null or empty");
+    
+        var rand = new Random();
+        var index = rand.Next(0, spawnPoints.Length);
+        return spawnPoints[index];
     }
     
     public static string Capitalize(this string input)

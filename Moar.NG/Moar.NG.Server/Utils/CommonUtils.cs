@@ -1,24 +1,13 @@
 using System.Text.Json;
 using Moar.NG.Server.Globals;
 
-namespace Moar.NG.Server.Stuff.Utils;
+namespace Moar.NG.Server.Utils;
 
 public static class CommonUtils
 {
-    public static T DeepCopy<T>(T obj)
-    {
-        var options = new JsonSerializerOptions
-        {
-            Converters = { new MongoIdConverter() }
-        };
-        
-        var json = JsonSerializer.Serialize(obj, options);
-        return JsonSerializer.Deserialize<T>(json, options)!;
-    }
-
     public static Dictionary<string, dynamic> GetRandomOrSelectedPreset()
     {
-        if (GlobalValues.ForcedPreset.Equals("custom"))
+        if (GlobalConstants.ForcedPreset.Equals("custom"))
         {
             return new Dictionary<string, dynamic>(); 
         }
@@ -43,4 +32,25 @@ public static class CommonUtils
         var random = new Random();
         return list.OrderBy(x => random.Next());
     }
+
+    public static IList<T> LooselyShuffle<T>(this IList<T> list, int shuffleStep = 3)
+    {
+        if (list.Count == 0)
+            return list;
+
+        var n = list.Count;
+        var halfN = n / 2;
+        var random = new Random();
+
+        for (var i = shuffleStep - 1; i < halfN; i += shuffleStep)
+        {
+            var randomIndex = halfN + random.Next(n - halfN);
+            
+            (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
+        }
+
+        return list;
+    }
+
+    
 }
